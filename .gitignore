@@ -1,0 +1,29 @@
+# dependencies
+node_modules/
+BE/node_modules/
+fe/node_modules/
+
+# build
+dist/
+build/
+BE/dist/
+fe/dist/
+
+# env
+.env
+BE/.env
+fe/.env
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# old git backup
+BE/.git-backup-be/
+fe/.git-backup-fe/
