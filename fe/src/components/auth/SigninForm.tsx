@@ -20,9 +20,13 @@ const initialFieldErrors = {
     email: "",
     password: "",
 }
-export const SigninForm = () => {
+type SigninFormProps = {
+    onLoginSuccess: () => void
+}
+
+export const SigninForm = ({ onLoginSuccess }: SigninFormProps) => {
     const [formData, setFormData] = useState(initialFormData)
-    const [fieldError, setFieldError] = useState(initialFieldErrors)
+    const [fieldErrors, setFieldErrors] = useState(initialFieldErrors)
     const [submitError, setSubmitError] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [successMessage, setSuccessMessage] = useState("")
@@ -33,7 +37,7 @@ export const SigninForm = () => {
             ...prev,
             [name]: value,
         }))
-        setFieldError((prev) => ({
+        setFieldErrors((prev) => ({
             ...prev,
             [name]: "",
         }))
@@ -57,26 +61,27 @@ export const SigninForm = () => {
         return newErrors
     }
 
-    const handleSumbit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setSubmitError("")
         setSuccessMessage("")
-        setIsLoading(true)
 
         const newErrors = validateForm()
         const hasError = newErrors.email || newErrors.password
 
         if (hasError) {
-            setFieldError(newErrors)
+            setFieldErrors(newErrors)
             setIsLoading(false)
             return
         }
+        setIsLoading(true)
         try {
             const res = await signin(formData)
             localStorage.setItem("token", res.token)
+            onLoginSuccess()
             setSuccessMessage("Đăng nhập thành công")
             setFormData(initialFormData)
-            setFieldError(initialFieldErrors)
+            setFieldErrors(initialFieldErrors)
             console.log(res)
         } catch (error) {
             if (error instanceof Error) {
@@ -101,18 +106,19 @@ export const SigninForm = () => {
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
                         <Input id="email" type="text" placeholder="Nhập email" name="email" value={formData.email} onChange={handleOnChange} />
-                        {fieldError.email && <p className="text-red-500 text-sm">{fieldError.email}</p>}
+                        {fieldErrors.email && <p className="text-red-500 text-sm">{fieldErrors.email}</p>}
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input id="password" type="password" placeholder="Nhập password" value={formData.password} name="password" onChange={handleOnChange} />
-                        {fieldError.password && <p className="text-red-500 text-sm">{fieldError.password}</p>}
+                        <Label htmlFor="password">Mật khẩu</Label>
+                        <Input id="password" type="password" placeholder="Nhập mật khẩu" value={formData.password} name="password" onChange={handleOnChange} />
+                        {fieldErrors.password && <p className="text-red-500 text-sm">{fieldErrors.password}</p>}
                     </div>
                     {submitError && <p className="text-red-500 text-sm">{submitError}</p>}
                     {successMessage && <p className="text-green-500 text-sm">{successMessage}</p>}
                     <Button type="submit" className="w-full" disabled={isLoading}>
                         {isLoading ? "Đang đăng nhập" : "Đăng nhập"}
                     </Button>
+
                 </form>
             </CardContent>
         </Card>

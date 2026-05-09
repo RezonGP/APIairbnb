@@ -1,4 +1,4 @@
-import type { SigninFormData, SignupFormData } from "@/types/auth";
+import type { ProfileResponse, SigninFormData, SigninResponse, SignupFormData, SignupResponse } from "@/types/auth";
 
 
 export async function signup(payload: SignupFormData) {
@@ -9,7 +9,7 @@ export async function signup(payload: SignupFormData) {
         },
         body: JSON.stringify(payload),
     })
-    const data = await response.json()
+    const data: SignupResponse = await response.json()
     if (!response.ok) {
         throw new Error(data.message || 'Signup failed')
     }
@@ -25,7 +25,7 @@ export async function signin(payload: SigninFormData) {
             body: JSON.stringify(payload),
         }
     )
-    const data = await response.json()
+    const data: SigninResponse = await response.json()
     if (!response.ok) {
         throw new Error(data.message || 'Signin failed')
     }
@@ -42,7 +42,7 @@ export async function getProfile() {
             'Authorization': `Bearer ${token}`,
         },
     })
-    const data = await response.json()
+    const data: ProfileResponse = await response.json()
     if (!response.ok) {
         throw new Error(data.message || 'Get profile failed')
     }
