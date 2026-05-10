@@ -1,4 +1,12 @@
-import type { ProfileResponse, SigninFormData, SigninResponse, SignupFormData, SignupResponse } from "@/types/auth";
+import type { ProfileResponse, SigninFormData, SigninResponse, SignupFormData, SignupResponse } from "@/features/auth/types/auth";
+
+type HttpError = Error & { status: number }
+
+function createHttpError(status: number, message: string): HttpError {
+    const error = new Error(message) as HttpError
+    error.status = status
+    return error
+}
 
 
 export async function signup(payload: SignupFormData) {
@@ -11,7 +19,7 @@ export async function signup(payload: SignupFormData) {
     })
     const data: SignupResponse = await response.json()
     if (!response.ok) {
-        throw new Error(data.message || 'Signup failed')
+        throw createHttpError(response.status, data.message || 'Signup failed')
     }
     return data
 }
@@ -27,7 +35,7 @@ export async function signin(payload: SigninFormData) {
     )
     const data: SigninResponse = await response.json()
     if (!response.ok) {
-        throw new Error(data.message || 'Signin failed')
+        throw createHttpError(response.status, data.message || 'Signin failed')
     }
     return data
 
@@ -44,7 +52,7 @@ export async function getProfile() {
     })
     const data: ProfileResponse = await response.json()
     if (!response.ok) {
-        throw new Error(data.message || 'Get profile failed')
+        throw createHttpError(response.status, data.message || 'Get profile failed')
     }
     return data
 } 

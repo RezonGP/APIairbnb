@@ -7,8 +7,8 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
-import { getProfile } from '@/services/auth.api'
-import type { Profile } from '@/types/auth'
+import { getProfile } from '@/features/auth/services/auth.api'
+import type { Profile } from '@/features/auth/types/auth'
 
 
 type ProfileCardProps = {
@@ -33,6 +33,10 @@ function ProfileCard({ onLogout }: ProfileCardProps) {
         } catch (error) {
             if (error instanceof Error) {
                 setErrorMessage(error.message)
+                const maybeHttpError = error as Error & { status?: number }
+                if (maybeHttpError.status === 401) {
+                    onLogout()
+                }
             } else {
                 setErrorMessage('Lấy profile thất bại.')
             }
@@ -55,9 +59,7 @@ function ProfileCard({ onLogout }: ProfileCardProps) {
                 <Button onClick={handleGetProfile} disabled={isLoading}>
                     {isLoading ? ' Đang lấy profile' : "Lấy profile"}
                 </Button>
-                <Button variant="outline" onClick={onLogout}>
-                    Đăng xuất
-                </Button>
+
                 {profile && (
                     <div className="space-y-2 rounded-md bg-slate-100 p-4">
                         <p className="text-sm font-bold">ID: {profile.id}</p>

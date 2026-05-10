@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { SigninForm } from '@/components/auth/SigninForm'
-import { SignupForm } from '@/components/auth/SignupForm'
+import { SigninForm } from '@/features/auth/components/SigninForm'
+import { SignupForm } from '@/features/auth/components/SignupForm'
 import { Button } from '@/components/ui/button'
 
 type AuthCardProps = {

@@ -8,9 +8,9 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import type { SigninFormData } from '@/types/auth'
+import type { SigninFormData } from '@/features/auth/types/auth'
 import React, { useState } from 'react'
-import { signin } from '@/services/auth.api'
+import { signin } from '@/features/auth/services/auth.api'
 
 const initialFormData: SigninFormData = {
     email: "",
@@ -29,7 +29,6 @@ export const SigninForm = ({ onLoginSuccess }: SigninFormProps) => {
     const [fieldErrors, setFieldErrors] = useState(initialFieldErrors)
     const [submitError, setSubmitError] = useState("")
     const [isLoading, setIsLoading] = useState(false)
-    const [successMessage, setSuccessMessage] = useState("")
 
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -41,6 +40,7 @@ export const SigninForm = ({ onLoginSuccess }: SigninFormProps) => {
             ...prev,
             [name]: "",
         }))
+        setSubmitError('')
     }
     const validateForm = () => {
         const newErrors = {
@@ -63,15 +63,14 @@ export const SigninForm = ({ onLoginSuccess }: SigninFormProps) => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        setSubmitError("")
-        setSuccessMessage("")
+        // setSubmitError("")
+        // setSuccessMessage("")
 
         const newErrors = validateForm()
         const hasError = newErrors.email || newErrors.password
 
         if (hasError) {
             setFieldErrors(newErrors)
-            setIsLoading(false)
             return
         }
         setIsLoading(true)
@@ -79,10 +78,8 @@ export const SigninForm = ({ onLoginSuccess }: SigninFormProps) => {
             const res = await signin(formData)
             localStorage.setItem("token", res.token)
             onLoginSuccess()
-            setSuccessMessage("Đăng nhập thành công")
             setFormData(initialFormData)
             setFieldErrors(initialFieldErrors)
-            console.log(res)
         } catch (error) {
             if (error instanceof Error) {
                 setSubmitError(error.message)
@@ -102,7 +99,7 @@ export const SigninForm = ({ onLoginSuccess }: SigninFormProps) => {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSumbit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
                         <Input id="email" type="text" placeholder="Nhập email" name="email" value={formData.email} onChange={handleOnChange} />
@@ -114,7 +111,6 @@ export const SigninForm = ({ onLoginSuccess }: SigninFormProps) => {
                         {fieldErrors.password && <p className="text-red-500 text-sm">{fieldErrors.password}</p>}
                     </div>
                     {submitError && <p className="text-red-500 text-sm">{submitError}</p>}
-                    {successMessage && <p className="text-green-500 text-sm">{successMessage}</p>}
                     <Button type="submit" className="w-full" disabled={isLoading}>
                         {isLoading ? "Đang đăng nhập" : "Đăng nhập"}
                     </Button>
