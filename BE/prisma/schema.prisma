@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model NguoiDung {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  phone     String
+  birthday  String?
+  gender    Boolean?
+  role      String    @default("USER")
+  avatar    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  datPhongs DatPhong[]
+  binhLuans BinhLuan[] @relation("BinhLuanNguoiDung")
+
+  @@map("nguoi_dung")
+}
+
+model ViTri {
+  id        Int      @id @default(autoincrement())
+  tenViTri  String
+  tinhThanh String
+  quocGia   String
+  hinhAnh   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  phongs Phong[]
+
+  @@map("vi_tri")
+}
+
+model Phong {
+  id       Int     @id @default(autoincrement())
+  tenPhong String
+  khach    Int
+  phongNgu Int
+  giuong   Int
+  phongTam Int
+  moTa     String  @db.Text
+  giaTien  Int
+
+  mayGiat Boolean @default(false)
+  banLa   Boolean @default(false)
+  tivi    Boolean @default(false)
+  dieuHoa Boolean @default(false)
+  wifi    Boolean @default(false)
+  bep     Boolean @default(false)
+  doXe    Boolean @default(false)
+  hoBoi   Boolean @default(false)
+  banUi   Boolean @default(false)
+
+  maViTri   Int
+  hinhAnh   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  viTri     ViTri      @relation(fields: [maViTri], references: [id])
+  datPhongs DatPhong[]
+  binhLuans BinhLuan[]
+
+  @@index([maViTri])
+  @@map("phong")
+}
+
+model DatPhong {
+  id           Int      @id @default(autoincrement())
+  maPhong      Int
+  ngayDen      DateTime
+  ngayDi       DateTime
+  soLuongKhach Int
+  maNguoiDung  Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  phong      Phong     @relation(fields: [maPhong], references: [id], onDelete: Cascade)
+  nguoiDung  NguoiDung @relation(fields: [maNguoiDung], references: [id], onDelete: Cascade)
+
+  @@index([maPhong])
+  @@index([maNguoiDung])
+  @@map("dat_phong")
+}
+
+model BinhLuan {
+  id              Int      @id @default(autoincrement())
+  maPhong         Int
+  maNguoiBinhLuan Int
+  ngayBinhLuan    DateTime @default(now())
+  noiDung         String   @db.Text
+  saoBinhLuan     Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  phong         Phong     @relation(fields: [maPhong], references: [id], onDelete: Cascade)
+  nguoiBinhLuan NguoiDung @relation("BinhLuanNguoiDung", fields: [maNguoiBinhLuan], references: [id], onDelete: Cascade)
+
+  @@index([maPhong])
+  @@index([maNguoiBinhLuan])
+  @@map("binh_luan")
+}

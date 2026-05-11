@@ -1,6 +1,5 @@
 import prisma from "../config/prisma.js";
 import { AppError } from "../utils/AppError.js";
-import { createBookingSchema, updateBookingSchema } from "../validators/datPhong.validator.js";
 
 const parseDate = (value) => {
     const date = new Date(value)
@@ -9,13 +8,7 @@ const parseDate = (value) => {
 
 
 const validateCreateBookingPayload = (payload) => {
-
-    // safeParse : validate và parse payload theo schema, nếu không thành công thì throw error
-    const parsedPayload = createBookingSchema.safeParse(payload);
-    if (!parsedPayload.success) {
-        throw new AppError(400, parsedPayload.error.issues[0].message);
-    }
-    const { maPhong, soLuongKhach, ngayDen, ngayDi } = parsedPayload.data;
+    const { maPhong, soLuongKhach, ngayDen, ngayDi } = payload;
     const roomId = Number(maPhong);
     const guestCount = Number(soLuongKhach);
     const checkInDate = parseDate(ngayDen);
@@ -35,12 +28,7 @@ const validateCreateBookingPayload = (payload) => {
     }
 }
 const validateUpdateBookingPayload = (payload, existingBooking) => {
-    const parsedPayload = updateBookingSchema.safeParse(payload);
-    // nếu không thành công thì throw error
-    if (!parsedPayload.success) {
-        throw new AppError(400, parsedPayload.error.issues[0].message);
-    }
-    const { maPhong, soLuongKhach, ngayDen, ngayDi } = parsedPayload.data;
+    const { maPhong, soLuongKhach, ngayDen, ngayDi } = payload;
 
     if (maPhong === undefined && soLuongKhach === undefined && ngayDen === undefined && ngayDi === undefined) {
         throw new AppError(400, "Khong co du lieu de cap nhat");
