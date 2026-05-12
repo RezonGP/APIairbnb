@@ -6,15 +6,16 @@ import Footer from './Footer'
 type MainLayoutProps = {
     children: ReactNode
     isAuthenticated: boolean
+    isAdmin: boolean
     onLogout: () => void
 }
 
-function MainLayout({ children, isAuthenticated, onLogout }: MainLayoutProps) {
+function MainLayout({ children, isAuthenticated, isAdmin, onLogout }: MainLayoutProps) {
     return (
         <div className="min-h-screen bg-slate-100">
-            <Navbar isAuthenticated={isAuthenticated} onLogout={onLogout} />
+            <Navbar isAuthenticated={isAuthenticated} isAdmin={isAdmin} onLogout={onLogout} />
 
-            <main className="mx-auto flex min-h-[calc(100vh-56px-73px)] max-w-5xl items-center justify-center p-4">
+            <main className="mx-auto w-full max-w-6xl p-4 md:p-6">
                 {children}
             </main>
 
